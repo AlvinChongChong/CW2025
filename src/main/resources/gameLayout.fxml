@@ -221,16 +221,20 @@
               style="-fx-background-color: #222; -fx-padding: 30; -fx-background-radius: 12;">
             <Label text="Game Paused"
                    style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: white;" />
-            <HBox spacing="15" alignment="CENTER">
+            <VBox spacing="10" alignment="CENTER">
                 <Button text="Resume" onAction="#resumeGame"
                         style="-fx-font-size: 16px; -fx-font-weight: bold;
                                -fx-background-color: #4CAF50; -fx-text-fill: white;
-                               -fx-background-radius: 10; -fx-padding: 8 15;" />
+                               -fx-background-radius: 10; -fx-padding: 8 15; -fx-min-width: 150;" />
+                <Button text="Main Menu" onAction="#exitToMainMenu"
+                        style="-fx-font-size: 16px; -fx-font-weight: bold;
+                               -fx-background-color: #FF9800; -fx-text-fill: white;
+                               -fx-background-radius: 10; -fx-padding: 8 15; -fx-min-width: 150;" />
                 <Button text="Exit Game" onAction="#exitGame"
                         style="-fx-font-size: 16px; -fx-font-weight: bold;
                                -fx-background-color: #f44336; -fx-text-fill: white;
-                               -fx-background-radius: 10; -fx-padding: 8 15;" />
-            </HBox>
+                               -fx-background-radius: 10; -fx-padding: 8 15; -fx-min-width: 150;" />
+            </VBox>
         </VBox>
     </StackPane>
 

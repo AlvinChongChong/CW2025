@@ -19,6 +19,7 @@ public class Main extends Application {
 
     /**
      * Starts the JavaFX application.
+     * Loads the main menu first, from which users can navigate to Solo, Versus, or exit.
      *
      * @param primaryStage the primary stage for this application
      * @throws Exception if loading the FXML or initializing the scene fails
@@ -28,18 +29,18 @@ public class Main extends Application {
         MusicPlayerWav musicPlayer = new MusicPlayerWav();
         musicPlayer.playMusic("/chill_music.wav");   // play background music
 
-        URL location = getClass().getClassLoader().getResource("gameLayout.fxml");
+        // Load main menu
+        URL location = getClass().getClassLoader().getResource("mainMenu.fxml");
         ResourceBundle resources = null;
         FXMLLoader fxmlLoader = new FXMLLoader(location, resources);
         Parent root = fxmlLoader.load();
-        GuiController c = fxmlLoader.getController();
+        MainMenuController menuController = fxmlLoader.getController();
+        menuController.setPrimaryStage(primaryStage);
 
-        primaryStage.setTitle("TetrisJFX");
-        Scene scene = new Scene(root, 300, 510);
+        primaryStage.setTitle("TetrisJFX - Main Menu");
+        Scene scene = new Scene(root, 800, 600);
         primaryStage.setScene(scene);
         primaryStage.setMaximized(true);    // Full screen
         primaryStage.show();
-
-        new GameController(c);
     }
 }

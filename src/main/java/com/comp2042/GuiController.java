@@ -8,8 +8,14 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.geometry.Rectangle2D;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.stage.Screen;
+import javafx.stage.Stage;
 import javafx.scene.effect.Reflection;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -425,6 +431,52 @@ public class GuiController implements Initializable {
             pauseMenu.setVisible(true);
         }
         gamePanel.requestFocus();
+    }
+
+    /**
+     * Exits to the main menu, stopping the current game.
+     *
+     * @param actionEvent button event
+     */
+    public void exitToMainMenu(ActionEvent actionEvent) {
+        // Stop all timelines
+        if (timeLine != null) {
+            timeLine.stop();
+        }
+        if (timerTimeline != null) {
+            timerTimeline.stop();
+        }
+
+        try {
+            // Get the stage from the current scene
+            Stage stage = (Stage) gamePanel.getScene().getWindow();
+
+            // Load main menu
+            FXMLLoader fxmlLoader = new FXMLLoader(
+                    getClass().getClassLoader().getResource("mainMenu.fxml"));
+            Parent root = fxmlLoader.load();
+            MainMenuController menuController = fxmlLoader.getController();
+            menuController.setPrimaryStage(stage);
+
+            // Get current stage dimensions to maintain full screen
+            double width = stage.getWidth();
+            double height = stage.getHeight();
+
+            // If stage dimensions are invalid, use screen dimensions
+            if (width <= 0 || height <= 0) {
+                Screen screen = Screen.getPrimary();
+                Rectangle2D bounds = screen.getVisualBounds();
+                width = bounds.getWidth();
+                height = bounds.getHeight();
+            }
+
+            Scene menuScene = new Scene(root, width, height);
+            stage.setScene(menuScene);
+            stage.setMaximized(true);
+            stage.setTitle("TetrisJFX - Main Menu");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     /**

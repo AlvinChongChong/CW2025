@@ -196,6 +196,7 @@ public class GuiController implements Initializable {
                 ghost.setOpacity(0.3);
                 ghost.setArcWidth(9);
                 ghost.setArcHeight(9);
+                ghost.setVisible(false); // Initially hidden
                 ghostBrick[i][j] = ghost;
                 brickOverlay.getChildren().add(ghost);
 
@@ -206,11 +207,12 @@ public class GuiController implements Initializable {
                 active.setStrokeType(StrokeType.CENTERED);
                 active.setArcWidth(9);
                 active.setArcHeight(9);
+                active.setVisible(false); // Initially hidden until positioned
                 activeBrick[i][j] = active;
                 brickOverlay.getChildren().add(active);
             }
         }
-
+        updateBrickPosition(brick);
 
         timeLine = new Timeline(new KeyFrame(
                 Duration.millis(400),
@@ -249,6 +251,7 @@ public class GuiController implements Initializable {
      */
     private void updateBrickPosition(ViewData brick) {
         // Normal brick
+        final int VGAP = 1;
         for (int i = 0; i < brick.getBrickData().length; i++) {
             for (int j = 0; j < brick.getBrickData()[i].length; j++) {
                 Rectangle r = activeBrick[i][j];
@@ -256,7 +259,7 @@ public class GuiController implements Initializable {
                 r.setVisible(value != 0);
                 r.setFill(getFillColor(value));
                 r.setX((brick.getxPosition() + j) * BRICK_SIZE);
-                r.setY((brick.getyPosition() + i) * BRICK_SIZE);
+                r.setY((brick.getyPosition() + i) * (BRICK_SIZE + VGAP) - 2);
             }
         }
 
@@ -647,7 +650,7 @@ public class GuiController implements Initializable {
         for (int i = 0; i < 4; i++) {
             for (int j = 0; j < 4; j++) {
                 if (ghostData[i][j] != 0) {
-                    Rectangle ghostRect = new Rectangle(BRICK_SIZE, BRICK_SIZE);
+                    Rectangle ghostRect = new Rectangle(BRICK_SIZE - 1, BRICK_SIZE - 1);
 
                     Color pieceColor = (Color) getFillColor(ghostData[i][j]);
                     Color ghostColor = new Color(pieceColor.getRed(), pieceColor.getGreen(), pieceColor.getBlue(), 0.3);
@@ -658,7 +661,7 @@ public class GuiController implements Initializable {
                     ghostRect.setArcHeight(9);
                     ghostRect.setArcWidth(9);
 
-                    // Use GridPane coordinates, no +1
+                    
                     gamePanel.add(ghostRect, ghostX + j, ghostY + i);
 
                     ghostPieceRectangles[i][j] = ghostRect;

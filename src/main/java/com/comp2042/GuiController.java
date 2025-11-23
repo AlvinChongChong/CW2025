@@ -661,7 +661,7 @@ public class GuiController implements Initializable {
                     ghostRect.setArcHeight(9);
                     ghostRect.setArcWidth(9);
 
-                    
+
                     gamePanel.add(ghostRect, ghostX + j, ghostY + i);
 
                     ghostPieceRectangles[i][j] = ghostRect;

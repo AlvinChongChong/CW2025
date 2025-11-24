@@ -1,0 +1,262 @@
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.image.Image?>
+<?import com.comp2042.GameOverPanel?>
+
+<?import java.net.URL?>
+<StackPane xmlns:fx="http://javafx.com/fxml" fx:controller="com.comp2042.VersusController"
+           fx:id="rootPane" style="-fx-background-color: #1a1a2e;">
+    
+    <HBox alignment="CENTER" spacing="30" style="-fx-padding: 20;">
+        
+        <!-- Player 1 Controls (Left Side) -->
+        <VBox alignment="CENTER" spacing="3"
+              maxWidth="180" maxHeight="180"
+              style="-fx-padding: 10; -fx-border-color: #4CAF50; -fx-border-width: 2; -fx-border-radius: 8; -fx-background-color: rgba(0,0,0,0.5); -fx-background-radius: 8;">
+            <Label text="Player 1 Controls" style="-fx-text-fill: #4CAF50; -fx-font-size: 16px; -fx-font-weight: bold;" />
+            <VBox spacing="3" alignment="CENTER_LEFT" style="-fx-padding: 5;">
+                <HBox spacing="10">
+                    <Label text="Move Left:" style="-fx-text-fill: #FFD700; -fx-font-size: 12px; -fx-min-width: 90;" />
+                    <Label text="←" style="-fx-text-fill: white; -fx-font-size: 12px; -fx-font-weight: bold;" />
+                </HBox>
+                <HBox spacing="10">
+                    <Label text="Move Right:" style="-fx-text-fill: #FFD700; -fx-font-size: 12px; -fx-min-width: 90;" />
+                    <Label text="→" style="-fx-text-fill: white; -fx-font-size: 12px; -fx-font-weight: bold;" />
+                </HBox>
+                <HBox spacing="10">
+                    <Label text="Rotate:" style="-fx-text-fill: #FFD700; -fx-font-size: 12px; -fx-min-width: 90;" />
+                    <Label text="↑" style="-fx-text-fill: white; -fx-font-size: 12px; -fx-font-weight: bold;" />
+                </HBox>
+                <HBox spacing="10">
+                    <Label text="Move Down:" style="-fx-text-fill: #FFD700; -fx-font-size: 12px; -fx-min-width: 90;" />
+                    <Label text="↓" style="-fx-text-fill: white; -fx-font-size: 12px; -fx-font-weight: bold;" />
+                </HBox>
+                <HBox spacing="10">
+                    <Label text="Hard Drop:" style="-fx-text-fill: #FFD700; -fx-font-size: 12px; -fx-min-width: 90;" />
+                    <Label text="SPACE" style="-fx-text-fill: white; -fx-font-size: 12px; -fx-font-weight: bold;" />
+                </HBox>
+                    <HBox spacing="10">
+                        <Label text="Hold:" style="-fx-text-fill: #FFD700; -fx-font-size: 12px; -fx-min-width: 90;" />
+                        <Label text="SHIFT" style="-fx-text-fill: white; -fx-font-size: 12px; -fx-font-weight: bold;" />
+                    </HBox>
+            </VBox>
+        </VBox>
+        
+        <!-- Main Game Area -->
+        <HBox alignment="CENTER" spacing="50">
+        
+        <!-- Player 1 -->
+        <VBox alignment="CENTER" spacing="10">
+            <Label text="Player 1" style="-fx-text-fill: #4CAF50; -fx-font-size: 24px; -fx-font-weight: bold;" />
+            
+            <VBox alignment="CENTER" spacing="5">
+                <!-- Score -->
+                <HBox alignment="CENTER" spacing="5">
+                    <Label text="Score:" style="-fx-text-fill: white; -fx-font-size: 14px;" />
+                    <HBox fx:id="p1ScoreDisplay" spacing="2" alignment="CENTER">
+                        <ImageView fx:id="p1ScoreThousands" fitWidth="15" fitHeight="20" />
+                        <ImageView fx:id="p1ScoreHundreds" fitWidth="15" fitHeight="20" />
+                        <ImageView fx:id="p1ScoreTens" fitWidth="15" fitHeight="20" />
+                        <ImageView fx:id="p1ScoreOnes" fitWidth="15" fitHeight="20" />
+                    </HBox>
+                </HBox>
+                
+                <!-- Lines -->
+                <HBox alignment="CENTER" spacing="5">
+                    <Label text="Lines:" style="-fx-text-fill: white; -fx-font-size: 14px;" />
+                    <HBox fx:id="p1LinesDisplay" spacing="2" alignment="CENTER">
+                        <ImageView fx:id="p1LineHundreds" fitWidth="15" fitHeight="20" />
+                        <ImageView fx:id="p1LineTens" fitWidth="15" fitHeight="20" />
+                        <ImageView fx:id="p1LineOnes" fitWidth="15" fitHeight="20" />
+                    </HBox>
+                </HBox>
+            </VBox>
+            
+            <!-- Game Board Player 1 -->
+            <StackPane maxWidth="150" maxHeight="400"
+                       prefWidth="150" prefHeight="400"
+                       styleClass="gameBoard">
+                <GridPane fx:id="p1GamePanel" vgap="1" />
+                <Pane fx:id="p1BrickOverlay" pickOnBounds="false" />
+                <Pane fx:id="p1GroupNotification" pickOnBounds="false" />
+                <GameOverPanel fx:id="p1GameOverPanel" StackPane.alignment="CENTER" />
+            </StackPane>
+            
+            <!-- Next and Hold for Player 1 -->
+            <HBox spacing="10" alignment="CENTER">
+                <!-- Next Block -->
+                <VBox alignment="CENTER" spacing="2"
+                      prefHeight="100" prefWidth="80"
+                      style="-fx-padding: 5; -fx-border-color: white; -fx-border-width: 2; -fx-border-radius: 5;">
+                    <Label text="Next" style="-fx-text-fill: white; -fx-font-size: 12px; -fx-font-weight: bold;" />
+                    <Pane fx:id="p1NextBlockPane" prefWidth="60" prefHeight="60"/>
+                </VBox>
+                
+                <!-- Hold Block -->
+                <VBox alignment="CENTER" spacing="2"
+                      prefHeight="100" prefWidth="80"
+                      style="-fx-padding: 5; -fx-border-color: white; -fx-border-width: 2; -fx-border-radius: 5;">
+                    <Label text="Hold" style="-fx-text-fill: white; -fx-font-size: 12px; -fx-font-weight: bold;" />
+                    <Pane fx:id="p1HoldBlockPane" prefWidth="60" prefHeight="60"/>
+                </VBox>
+            </HBox>
+        </VBox>
+        
+        <!-- VS -->
+        <VBox alignment="CENTER">
+            <Label text="VS" style="-fx-text-fill: #FFD700; -fx-font-size: 48px; -fx-font-weight: bold;" />
+        </VBox>
+        
+        <!-- Player 2 -->
+        <VBox alignment="CENTER" spacing="10">
+            <Label text="Player 2" style="-fx-text-fill: #2196F3; -fx-font-size: 24px; -fx-font-weight: bold;" />
+            
+            <VBox alignment="CENTER" spacing="5">
+                <!-- Score -->
+                <HBox alignment="CENTER" spacing="5">
+                    <Label text="Score:" style="-fx-text-fill: white; -fx-font-size: 14px;" />
+                    <HBox fx:id="p2ScoreDisplay" spacing="2" alignment="CENTER">
+                        <ImageView fx:id="p2ScoreThousands" fitWidth="15" fitHeight="20" />
+                        <ImageView fx:id="p2ScoreHundreds" fitWidth="15" fitHeight="20" />
+                        <ImageView fx:id="p2ScoreTens" fitWidth="15" fitHeight="20" />
+                        <ImageView fx:id="p2ScoreOnes" fitWidth="15" fitHeight="20" />
+                    </HBox>
+                </HBox>
+                
+                <!-- Lines -->
+                <HBox alignment="CENTER" spacing="5">
+                    <Label text="Lines:" style="-fx-text-fill: white; -fx-font-size: 14px;" />
+                    <HBox fx:id="p2LinesDisplay" spacing="2" alignment="CENTER">
+                        <ImageView fx:id="p2LineHundreds" fitWidth="15" fitHeight="20" />
+                        <ImageView fx:id="p2LineTens" fitWidth="15" fitHeight="20" />
+                        <ImageView fx:id="p2LineOnes" fitWidth="15" fitHeight="20" />
+                    </HBox>
+                </HBox>
+            </VBox>
+            
+            <!-- Game Board Player 2 -->
+            <StackPane maxWidth="150" maxHeight="400"
+                       prefWidth="150" prefHeight="400"
+                       styleClass="gameBoard">
+                <GridPane fx:id="p2GamePanel" vgap="1" />
+                <Pane fx:id="p2BrickOverlay" pickOnBounds="false" />
+                <Pane fx:id="p2GroupNotification" pickOnBounds="false" />
+                <GameOverPanel fx:id="p2GameOverPanel" StackPane.alignment="CENTER" />
+            </StackPane>
+            
+            <!-- Next and Hold for Player 2 -->
+            <HBox spacing="10" alignment="CENTER">
+                <!-- Next Block -->
+                <VBox alignment="CENTER" spacing="2"
+                      prefHeight="100" prefWidth="80"
+                      style="-fx-padding: 5; -fx-border-color: white; -fx-border-width: 2; -fx-border-radius: 5;">
+                    <Label text="Next" style="-fx-text-fill: white; -fx-font-size: 12px; -fx-font-weight: bold;" />
+                    <Pane fx:id="p2NextBlockPane" prefWidth="60" prefHeight="60"/>
+                </VBox>
+                
+                <!-- Hold Block -->
+                <VBox alignment="CENTER" spacing="2"
+                      prefHeight="100" prefWidth="80"
+                      style="-fx-padding: 5; -fx-border-color: white; -fx-border-width: 2; -fx-border-radius: 5;">
+                    <Label text="Hold" style="-fx-text-fill: white; -fx-font-size: 12px; -fx-font-weight: bold;" />
+                    <Pane fx:id="p2HoldBlockPane" prefWidth="60" prefHeight="60"/>
+                </VBox>
+            </HBox>
+        </VBox>
+        </HBox>
+        
+        <!-- Player 2 Controls (Right Side) -->
+        <VBox alignment="CENTER" spacing="3"
+              maxWidth="180" maxHeight="180"
+              style="-fx-padding: 10; -fx-border-color: #2196F3; -fx-border-width: 2; -fx-border-radius: 8; -fx-background-color: rgba(0,0,0,0.5); -fx-background-radius: 8;">
+            <Label text="Player 2 Controls" style="-fx-text-fill: #2196F3; -fx-font-size: 16px; -fx-font-weight: bold;" />
+            <VBox spacing="3" alignment="CENTER_LEFT" style="-fx-padding: 5;">
+                <HBox spacing="10">
+                    <Label text="Move Left:" style="-fx-text-fill: #FFD700; -fx-font-size: 12px; -fx-min-width: 90;" />
+                    <Label text="A" style="-fx-text-fill: white; -fx-font-size: 12px; -fx-font-weight: bold;" />
+                </HBox>
+                <HBox spacing="10">
+                    <Label text="Move Right:" style="-fx-text-fill: #FFD700; -fx-font-size: 12px; -fx-min-width: 90;" />
+                    <Label text="D" style="-fx-text-fill: white; -fx-font-size: 12px; -fx-font-weight: bold;" />
+                </HBox>
+                <HBox spacing="10">
+                    <Label text="Rotate:" style="-fx-text-fill: #FFD700; -fx-font-size: 12px; -fx-min-width: 90;" />
+                    <Label text="W" style="-fx-text-fill: white; -fx-font-size: 12px; -fx-font-weight: bold;" />
+                </HBox>
+                <HBox spacing="10">
+                    <Label text="Move Down:" style="-fx-text-fill: #FFD700; -fx-font-size: 12px; -fx-min-width: 90;" />
+                    <Label text="S" style="-fx-text-fill: white; -fx-font-size: 12px; -fx-font-weight: bold;" />
+                </HBox>
+                <HBox spacing="10">
+                    <Label text="Hard Drop:" style="-fx-text-fill: #FFD700; -fx-font-size: 12px; -fx-min-width: 90;" />
+                    <Label text="Q" style="-fx-text-fill: white; -fx-font-size: 12px; -fx-font-weight: bold;" />
+                </HBox>
+                <HBox spacing="10">
+                    <Label text="Hold:" style="-fx-text-fill: #FFD700; -fx-font-size: 12px; -fx-min-width: 90;" />
+                    <Label text="E" style="-fx-text-fill: white; -fx-font-size: 12px; -fx-font-weight: bold;" />
+                </HBox>
+            </VBox>
+        </VBox>
+    </HBox>
+
+    <!-- Top Right Controls -->
+    <HBox alignment="TOP_RIGHT" spacing="10"
+          StackPane.alignment="TOP_RIGHT" style="-fx-padding: 10;">
+        <!-- Restart button -->
+        <Button fx:id="restartButton" onAction="#restartGame"
+                style="-fx-font-size: 16px; -fx-font-weight: bold;
+                   -fx-background-color: transparent; -fx-padding: 0;">
+            <graphic>
+                <ImageView fitWidth="100" fitHeight="100" preserveRatio="true">
+                    <image>
+                        <Image url="@Restart.png" />
+                    </image>
+                </ImageView>
+            </graphic>
+        </Button>
+
+        <!-- Pause button -->
+        <Button fx:id="pauseButton" onAction="#pauseGame"
+                style="-fx-font-size: 16px; -fx-font-weight: bold;
+                   -fx-background-color: transparent; -fx-padding: 0;">
+            <graphic>
+                <ImageView fitWidth="120" fitHeight="120" preserveRatio="true">
+                    <image>
+                        <Image url="@pause.png" />
+                    </image>
+                </ImageView>
+            </graphic>
+        </Button>
+    </HBox>
+
+    <!-- Pause menu -->
+    <StackPane fx:id="pauseMenu" visible="false"
+               style="-fx-background-color: rgba(0, 0, 0, 0.6);"
+               StackPane.alignment="CENTER">
+        <VBox alignment="CENTER" spacing="20"
+              style="-fx-background-color: #222; -fx-padding: 30; -fx-background-radius: 12;">
+            <Label text="Game Paused"
+                   style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: white;" />
+            <VBox spacing="10" alignment="CENTER">
+                <Button text="Resume" onAction="#resumeGame"
+                        style="-fx-font-size: 16px; -fx-font-weight: bold;
+                                       -fx-background-color: #4CAF50; -fx-text-fill: white;
+                                       -fx-background-radius: 10; -fx-padding: 8 15; -fx-min-width: 150;" />
+                <Button text="Main Menu" onAction="#exitToMainMenu"
+                        style="-fx-font-size: 16px; -fx-font-weight: bold;
+                                       -fx-background-color: #FF9800; -fx-text-fill: white;
+                                       -fx-background-radius: 10; -fx-padding: 8 15; -fx-min-width: 150;" />
+                <Button text="Exit Game" onAction="#exitGame"
+                        style="-fx-font-size: 16px; -fx-font-weight: bold;
+                                       -fx-background-color: #f44336; -fx-text-fill: white;
+                                       -fx-background-radius: 10; -fx-padding: 8 15; -fx-min-width: 150;" />
+            </VBox>
+        </VBox>
+    </StackPane>
+    
+    <stylesheets>
+        <URL value="@window_style.css"/>
+    </stylesheets>
+</StackPane>
+

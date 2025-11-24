@@ -85,28 +85,35 @@ public class MainMenuController implements Initializable {
     }
 
     /**
-     * Starts the Versus game mode.
-     * Currently shows a placeholder message.
+     * Starts the Versus game mode (local two-player).
      *
      * @param event the action event
      */
     @FXML
     private void startVersus(ActionEvent event) {
-        // Placeholder for versus mode
-        // For now, we'll show a message or load a placeholder scene
         try {
-            // You can create a versusLayout.fxml later for multiplayer
-            // For now, just show an alert or start solo mode
-            System.out.println("Versus mode - Coming soon!");
-            // Optionally show an alert:
-            // Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            // alert.setTitle("Versus Mode");
-            // alert.setHeaderText("Coming Soon!");
-            // alert.setContentText("Versus mode is under development.");
-            // alert.showAndWait();
+            URL location = getClass().getClassLoader().getResource("versusLayout.fxml");
+            FXMLLoader fxmlLoader = new FXMLLoader(location);
+            Parent root = fxmlLoader.load();
+            VersusController versusController = fxmlLoader.getController();
+            versusController.setPrimaryStage(primaryStage);
+
+            // Maintain full screen
+            double width = primaryStage.getWidth();
+            double height = primaryStage.getHeight();
             
-            // For now, start solo mode as placeholder
-            startSolo(event);
+
+            if (width <= 0 || height <= 0) {
+                javafx.stage.Screen screen = javafx.stage.Screen.getPrimary();
+                javafx.geometry.Rectangle2D bounds = screen.getVisualBounds();
+                width = bounds.getWidth();
+                height = bounds.getHeight();
+            }
+            
+            Scene versusScene = new Scene(root, width, height);
+            primaryStage.setScene(versusScene);
+            primaryStage.setMaximized(true);
+            primaryStage.setTitle("TetrisJFX - Versus");
         } catch (Exception e) {
             e.printStackTrace();
         }

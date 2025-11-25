@@ -4,13 +4,18 @@
 <?import javafx.scene.image.Image?>
 
 <StackPane xmlns:fx="http://javafx.com/fxml" fx:controller="com.comp2042.MainMenuController"
-           style="-fx-background-color: #1a1a2e;">
+           style="-fx-background-color: #1a1a2e;
+                  -fx-background-image: url('MainMenu.jpg');
+                  -fx-background-size: cover;
+                  -fx-background-position: center center;
+                  -fx-background-repeat: no-repeat;">
+
     <!-- Background -->
-    <VBox alignment="CENTER" spacing="40" style="-fx-padding: 50;">
+    <VBox alignment="CENTER" spacing="40"  style= "-fx-padding: 50;">
         <!-- Title -->
-        <Label text="TETRIS" 
-               style="-fx-text-fill: white; -fx-font-size: 72px; -fx-font-weight: bold; -fx-effect: dropshadow(gaussian, #00ffff, 20, 0.5, 0, 0);" />
-        
+        <Label text="TETRIS"
+               style="-fx-text-fill: white; -fx-font-size: 72px; -fx-font-weight: bold; -fx-effect: dropshadow(gaussian, #8000FF, 20, 0.5, 0, 0);" />
+
         <!-- Menu Buttons -->
         <VBox alignment="CENTER" spacing="20" style="-fx-padding: 20;">
             <Button fx:id="soloButton" text="Solo" 

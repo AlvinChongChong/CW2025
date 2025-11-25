@@ -14,6 +14,7 @@ import javafx.geometry.Rectangle2D;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.scene.effect.Reflection;
@@ -107,11 +108,16 @@ public class GuiController implements Initializable {
     @FXML
     private ImageView levelOnes;
 
+    @FXML
+    private Label highScoreLabel;
+
 
     private int timeRemaining = 180;
     private Image[] digits = new Image[10];
     private Rectangle[][] ghostPieceRectangles;
     private int totalLinesCleared = 0;
+    private final HighScoreManager highScoreManager = new HighScoreManager();
+    private int highScore;
 
 
     /**
@@ -170,6 +176,8 @@ public class GuiController implements Initializable {
         updateScoreImages(0);
         updateLineImages(0);
         updateLevelImages(0);
+        highScore = highScoreManager.loadHighScore();
+        updateHighScoreLabel();
 
     }
 
@@ -347,8 +355,11 @@ public class GuiController implements Initializable {
 
     public void bindScore(IntegerProperty scoreProperty) {
         scoreProperty.addListener((obs, oldVal, newVal) -> {
-            updateScoreImages(newVal.intValue());
+            int score = newVal.intValue();
+            updateScoreImages(score);
+            checkForHighScore(score);
         });
+        checkForHighScore(scoreProperty.get());
     }
 
     /**
@@ -550,6 +561,32 @@ public class GuiController implements Initializable {
         scoreHundreds.setImage(digits[hundreds]);
         scoreTens.setImage(digits[tens]);
         scoreOnes.setImage(digits[ones]);
+    }
+
+    /**
+     * Updates the high score label text on screen.
+     */
+    private void updateHighScoreLabel() {
+        if (highScoreLabel != null) {
+            highScoreLabel.setText(String.format("%05d", Math.max(0, highScore)));
+        }
+    }
+
+    /**
+     * Checks whether the current score surpasses the stored high score.
+     * If so, saves and updates the display.
+     *
+     * @param newScore latest score value
+     */
+    private void checkForHighScore(int newScore) {
+        if (newScore > highScore) {
+            highScore = newScore;
+            highScoreManager.saveHighScore(highScore);
+            updateHighScoreLabel();
+        } else {
+            // ensure label is up to date when binding is first established
+            updateHighScoreLabel();
+        }
     }
 
     /**

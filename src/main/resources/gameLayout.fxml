@@ -98,6 +98,15 @@
                 </HBox>
             </HBox>
 
+            <!-- High Score -->
+            <HBox alignment="CENTER" spacing="6"
+                  style="-fx-padding: 5; -fx-border-color: #FFD700; -fx-border-width: 2; -fx-border-radius: 8; -fx-background-color: rgba(0,0,0,0.3); -fx-background-radius: 8;">
+                <Label text="High Score:"
+                       style="-fx-text-fill: #FFD700; -fx-font-size: 16px; -fx-font-weight: bold;" />
+                <Label fx:id="highScoreLabel" text="00000"
+                       style="-fx-text-fill: white; -fx-font-size: 16px; -fx-font-weight: bold;" />
+            </HBox>
+
     <HBox alignment="CENTER" spacing="20">
         <!-- Game Board -->
         <VBox alignment="CENTER" spacing="10">

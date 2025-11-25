@@ -234,23 +234,38 @@
     <StackPane fx:id="pauseMenu" visible="false"
                style="-fx-background-color: rgba(0, 0, 0, 0.6);"
                StackPane.alignment="CENTER">
-        <VBox alignment="CENTER" spacing="20"
-              style="-fx-background-color: #222; -fx-padding: 30; -fx-background-radius: 12;">
-            <Label text="Game Paused"
-                   style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: white;" />
-            <VBox spacing="10" alignment="CENTER">
-                <Button text="Resume" onAction="#resumeGame"
-                        style="-fx-font-size: 16px; -fx-font-weight: bold;
-                                       -fx-background-color: #4CAF50; -fx-text-fill: white;
-                                       -fx-background-radius: 10; -fx-padding: 8 15; -fx-min-width: 150;" />
-                <Button text="Main Menu" onAction="#exitToMainMenu"
-                        style="-fx-font-size: 16px; -fx-font-weight: bold;
-                                       -fx-background-color: #FF9800; -fx-text-fill: white;
-                                       -fx-background-radius: 10; -fx-padding: 8 15; -fx-min-width: 150;" />
-                <Button text="Exit Game" onAction="#exitGame"
-                        style="-fx-font-size: 16px; -fx-font-weight: bold;
-                                       -fx-background-color: #f44336; -fx-text-fill: white;
-                                       -fx-background-radius: 10; -fx-padding: 8 15; -fx-min-width: 150;" />
+        <VBox alignment="TOP_LEFT" spacing="20"
+              style="-fx-background-color: #222; -fx-padding: 1; -fx-background-radius: 12;">
+            <Button fx:id="musicToggleButton" onAction="#toggleMusic"
+                    style="-fx-background-color: transparent; -fx-padding: 0;">
+                <graphic>
+                    <ImageView fitWidth="80" fitHeight="80" preserveRatio="true">
+                        <image>
+                            <Image url="@musicSymbol.png" />
+                        </image>
+                    </ImageView>
+                </graphic>
+            </Button>
+            <VBox alignment="CENTER" spacing="20"
+                  style="-fx-background-color: #222; -fx-padding: 30; -fx-background-radius: 12;">
+
+                <Region prefHeight="120"/>
+                <Label text="Game Paused"
+                       style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: white;" />
+                <VBox spacing="10" alignment="CENTER">
+                    <Button text="Resume" onAction="#resumeGame"
+                            style="-fx-font-size: 16px; -fx-font-weight: bold;
+                               -fx-background-color: #4CAF50; -fx-text-fill: white;
+                               -fx-background-radius: 10; -fx-padding: 8 15; -fx-min-width: 150;" />
+                    <Button text="Main Menu" onAction="#exitToMainMenu"
+                            style="-fx-font-size: 16px; -fx-font-weight: bold;
+                               -fx-background-color: #FF9800; -fx-text-fill: white;
+                               -fx-background-radius: 10; -fx-padding: 8 15; -fx-min-width: 150;" />
+                    <Button text="Exit Game" onAction="#exitGame"
+                            style="-fx-font-size: 16px; -fx-font-weight: bold;
+                               -fx-background-color: #f44336; -fx-text-fill: white;
+                               -fx-background-radius: 10; -fx-padding: 8 15; -fx-min-width: 150;" />
+                </VBox>
             </VBox>
         </VBox>
     </StackPane>

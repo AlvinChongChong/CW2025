@@ -14,6 +14,7 @@ import javafx.geometry.Rectangle2D;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Tooltip;
 import javafx.scene.control.Label;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
@@ -33,6 +34,10 @@ import javafx.util.Duration;
 
 
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.ResourceBundle;
 
 /**
@@ -52,6 +57,8 @@ public class GuiController implements Initializable {
     public Button pauseButton;
     /** StackPane containing pause menu. */
     public StackPane pauseMenu;
+    @FXML
+    private Button musicToggleButton;
 
     @FXML
     private ImageView minTens, minOnes, secTens, secOnes;  //image for timer
@@ -116,8 +123,14 @@ public class GuiController implements Initializable {
     private Image[] digits = new Image[10];
     private Rectangle[][] ghostPieceRectangles;
     private int totalLinesCleared = 0;
-    private final HighScoreManager highScoreManager = new HighScoreManager();
     private int highScore;
+
+    private static final String HIGH_SCORE_DIR = ".tetris";
+    private static final String HIGH_SCORE_FILE = "highscore.dat";
+    private java.nio.file.Path highScoreFilePath;
+    @FXML
+    private ImageView musicIcon;
+
 
 
     /**
@@ -176,8 +189,10 @@ public class GuiController implements Initializable {
         updateScoreImages(0);
         updateLineImages(0);
         updateLevelImages(0);
-        highScore = highScoreManager.loadHighScore();
+        initializeHighScore();
+        highScore = loadHighScore();
         updateHighScoreLabel();
+        updateMusicButtonState();
 
     }
 
@@ -336,6 +351,108 @@ public class GuiController implements Initializable {
         }
         gamePanel.requestFocus();
     }
+    
+    /**
+     * Shows a visual effect when lines are cleared.
+     * Flashes the cleared rows white before they disappear.
+     * Uses the board matrix before clearing to identify which rows to flash.
+     *
+     * @param boardBeforeClear the board matrix before rows were cleared
+     * @param linesCleared number of lines that were cleared
+     * @param newBoardMatrix the board matrix after rows were cleared (to refresh after effect)
+     */
+    public void showLineClearEffectWithBoard(int[][] boardBeforeClear, int linesCleared, int[][] newBoardMatrix) {
+        if (displayMatrix == null || boardBeforeClear == null) return;
+
+        if (eventListener != null) {
+        }
+        
+        // Find which rows are full
+        List<Integer> rowsToFlash = new ArrayList<>();
+        for (int i = 0; i < boardBeforeClear.length; i++) {
+            boolean rowFull = true;
+            for (int j = 0; j < boardBeforeClear[i].length; j++) {
+                if (boardBeforeClear[i][j] == 0) {
+                    rowFull = false;
+                    break;
+                }
+            }
+            if (rowFull) {
+                rowsToFlash.add(i);
+            }
+        }
+        
+        if (rowsToFlash.isEmpty()) return;
+
+        Map<Integer, Paint[]> originalColors = new HashMap<>();
+        for (Integer row : rowsToFlash) {
+            Paint[] colors = new Paint[displayMatrix[row].length];
+            for (int j = 0; j < displayMatrix[row].length; j++) {
+                colors[j] = displayMatrix[row][j].getFill();
+            }
+            originalColors.put(row, colors);
+        }
+
+        Timeline flashTimeline = new Timeline();
+        
+        // Flash to white (immediate)
+        KeyFrame flashOn1 = new KeyFrame(Duration.millis(0), e -> {
+            for (Integer row : rowsToFlash) {
+                for (int j = 0; j < displayMatrix[row].length; j++) {
+                    displayMatrix[row][j].setFill(Color.WHITE);
+                }
+            }
+        });
+        
+        // Flash back to original
+        KeyFrame flashOff1 = new KeyFrame(Duration.millis(80), e -> {
+            for (Integer row : rowsToFlash) {
+                Paint[] colors = originalColors.get(row);
+                for (int j = 0; j < displayMatrix[row].length; j++) {
+                    displayMatrix[row][j].setFill(colors[j]);
+                }
+            }
+        });
+        
+        // Flash to white again
+        KeyFrame flashOn2 = new KeyFrame(Duration.millis(160), e -> {
+            for (Integer row : rowsToFlash) {
+                for (int j = 0; j < displayMatrix[row].length; j++) {
+                    displayMatrix[row][j].setFill(Color.WHITE);
+                }
+            }
+        });
+        
+        // Flash back to original again
+        KeyFrame flashOff2 = new KeyFrame(Duration.millis(240), e -> {
+            for (Integer row : rowsToFlash) {
+                Paint[] colors = originalColors.get(row);
+                for (int j = 0; j < displayMatrix[row].length; j++) {
+                    displayMatrix[row][j].setFill(colors[j]);
+                }
+            }
+        });
+        
+        // Flash to white one more time, then refresh board
+        KeyFrame flashOn3 = new KeyFrame(Duration.millis(320), e -> {
+            for (Integer row : rowsToFlash) {
+                for (int j = 0; j < displayMatrix[row].length; j++) {
+                    displayMatrix[row][j].setFill(Color.WHITE);
+                }
+            }
+        });
+        
+        // Refresh board after effect completes
+        KeyFrame refreshBoard = new KeyFrame(Duration.millis(400), e -> {
+            if (newBoardMatrix != null) {
+                refreshGameBackground(newBoardMatrix);
+            }
+        });
+        
+        flashTimeline.getKeyFrames().addAll(flashOn1, flashOff1, flashOn2, flashOff2, flashOn3, refreshBoard);
+        flashTimeline.setCycleCount(1);
+        flashTimeline.play();
+    }
 
     /**
      * Sets the listener for input events, allowing the GUI to
@@ -422,6 +539,7 @@ public class GuiController implements Initializable {
         timeLine.play();
         if (timerTimeline != null) timerTimeline.play();
         gamePanel.requestFocus();
+        updateMusicButtonState();
     }
 
     /**
@@ -500,6 +618,32 @@ public class GuiController implements Initializable {
         System.exit(0);
     }
 
+    @FXML
+    private void toggleMusic(ActionEvent event) {
+        MusicPlayerWav player = Main.getMusicPlayer();
+        if (player == null) return;
+
+        if (player.isPlaying()) {
+            player.stopMusic();
+        } else {
+            player.playMusic(Main.getDefaultMusicTrack());
+        }
+        updateMusicButtonState();
+    }
+
+    private void updateMusicButtonState() {
+        MusicPlayerWav player = Main.getMusicPlayer();
+        boolean playing = player != null && player.isPlaying();
+
+        musicIcon.setOpacity(playing ? 1.0 : 0.35);
+
+        musicToggleButton.setTooltip(new Tooltip(
+                playing ? "Mute Music" : "Play Music"
+        ));
+
+    }
+
+
     /**
      * Loads the digit images (0-9) from resources into the `digits` array.
      * These images are later used for displaying scores, lines, and timer digits.
@@ -564,6 +708,60 @@ public class GuiController implements Initializable {
     }
 
     /**
+     * Initializes the high score file path.
+     */
+    private void initializeHighScore() {
+        String userHome = System.getProperty("user.home");
+        java.nio.file.Path directory = java.nio.file.Paths.get(userHome, HIGH_SCORE_DIR);
+        try {
+            java.nio.file.Files.createDirectories(directory);
+        } catch (java.io.IOException e) {
+            directory = java.nio.file.Paths.get("").toAbsolutePath();
+        }
+        highScoreFilePath = directory.resolve(HIGH_SCORE_FILE);
+    }
+
+    /**
+     * Loads the saved high score if available.
+     *
+     * @return the stored high score, or 0 if none exists or parsing fails
+     */
+    private int loadHighScore() {
+        if (highScoreFilePath == null || !java.nio.file.Files.exists(highScoreFilePath)) {
+            return 0;
+        }
+        try {
+            String content = java.nio.file.Files.readString(highScoreFilePath, java.nio.charset.StandardCharsets.UTF_8).trim();
+            if (content.isEmpty()) {
+                return 0;
+            }
+            return Integer.parseInt(content);
+        } catch (java.io.IOException | NumberFormatException e) {
+            return 0;
+        }
+    }
+
+    /**
+     * Persists the provided high score value.
+     *
+     * @param newHighScore score to store
+     */
+    private void saveHighScore(int newHighScore) {
+        if (highScoreFilePath == null) return;
+        try {
+            java.nio.file.Files.writeString(
+                    highScoreFilePath,
+                    String.valueOf(newHighScore),
+                    java.nio.charset.StandardCharsets.UTF_8,
+                    java.nio.file.StandardOpenOption.CREATE,
+                    java.nio.file.StandardOpenOption.TRUNCATE_EXISTING
+            );
+        } catch (java.io.IOException e) {
+            // Swallow the exception; inability to save shouldn't crash the game.
+        }
+    }
+
+    /**
      * Updates the high score label text on screen.
      */
     private void updateHighScoreLabel() {
@@ -581,7 +779,7 @@ public class GuiController implements Initializable {
     private void checkForHighScore(int newScore) {
         if (newScore > highScore) {
             highScore = newScore;
-            highScoreManager.saveHighScore(highScore);
+            saveHighScore(highScore);
             updateHighScoreLabel();
         } else {
             // ensure label is up to date when binding is first established

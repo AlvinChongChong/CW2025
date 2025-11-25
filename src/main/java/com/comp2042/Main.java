@@ -17,6 +17,17 @@ import java.util.ResourceBundle;
  */
 public class Main extends Application {
 
+    private static final String DEFAULT_MUSIC = "/chill_music.wav";
+    private static final MusicPlayerWav MUSIC_PLAYER = new MusicPlayerWav();
+
+    public static MusicPlayerWav getMusicPlayer() {
+        return MUSIC_PLAYER;
+    }
+
+    public static String getDefaultMusicTrack() {
+        return DEFAULT_MUSIC;
+    }
+
     /**
      * Starts the JavaFX application.
      * Loads the main menu first, from which users can navigate to Solo, Versus, or exit.
@@ -26,8 +37,7 @@ public class Main extends Application {
      */
     @Override
     public void start(Stage primaryStage) throws Exception {
-        MusicPlayerWav musicPlayer = new MusicPlayerWav();
-        musicPlayer.playMusic("/chill_music.wav");   // play background music
+        MUSIC_PLAYER.playMusic(DEFAULT_MUSIC);   // play background music
 
         // Load main menu
         URL location = getClass().getClassLoader().getResource("mainMenu.fxml");

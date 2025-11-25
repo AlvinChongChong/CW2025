@@ -10,6 +10,7 @@ import javafx.geometry.Rectangle2D;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
@@ -23,6 +24,8 @@ import javafx.scene.shape.Rectangle;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import java.util.ArrayList;
+import java.util.List;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -41,6 +44,7 @@ public class VersusController implements Initializable {
     @FXML private StackPane pauseMenu;
     @FXML private Button pauseButton;
     @FXML private Button restartButton;
+    @FXML private Button musicToggleButton;
 
     @FXML private GridPane p1GamePanel;
     @FXML private Pane p1BrickOverlay;
@@ -80,6 +84,9 @@ public class VersusController implements Initializable {
     private Image[] digits = new Image[10];
 
     private Stage primaryStage;
+    private Rectangle[][] displayMatrix;
+    private InputEventListener eventListener;
+
 
     /**
      * Sets the primary stage for this controller.
@@ -148,6 +155,7 @@ public class VersusController implements Initializable {
         updateScoreImages(2, 0);
         updateLineImages(1, 0);
         updateLineImages(2, 0);
+        updateMusicButtonState();
     }
 
     /**
@@ -212,6 +220,68 @@ public class VersusController implements Initializable {
         }
 
         updateBrickPositions(player, viewData);
+    }
+
+    private boolean showLineClearEffect(int player, int[][] boardBeforeClear) {
+        Rectangle[][] displayMatrix = (player == 1) ? p1DisplayMatrix : p2DisplayMatrix;
+        Pane overlay = (player == 1) ? p1BrickOverlay : p2BrickOverlay;
+        if (displayMatrix == null || overlay == null || boardBeforeClear == null) return false;
+
+        List<Integer> rowsToFlash = new ArrayList<>();
+        for (int i = 0; i < boardBeforeClear.length; i++) {
+            boolean rowFull = true;
+            for (int j = 0; j < boardBeforeClear[i].length; j++) {
+                if (boardBeforeClear[i][j] == 0) {
+                    rowFull = false;
+                    break;
+                }
+            }
+            if (rowFull) {
+                rowsToFlash.add(i);
+            }
+        }
+        if (rowsToFlash.isEmpty()) {
+            return false;
+        }
+
+        List<Rectangle> flashRects = new ArrayList<>();
+        for (Integer row : rowsToFlash) {
+            for (int col = 0; col < boardBeforeClear[row].length; col++) {
+                if (boardBeforeClear[row][col] == 0) continue;
+                Rectangle rect = new Rectangle(BRICK_SIZE - 1, BRICK_SIZE - 1);
+                rect.setFill(Color.WHITE);
+                rect.setOpacity(0.0);
+                rect.setArcWidth(9);
+                rect.setArcHeight(9);
+                rect.setX(col * BRICK_SIZE);
+                rect.setY(row * (BRICK_SIZE + VGAP) - 2);
+                flashRects.add(rect);
+            }
+        }
+        if (flashRects.isEmpty()) {
+            return false;
+        }
+        overlay.getChildren().addAll(flashRects);
+
+        Timeline flashTimeline = new Timeline(
+                new KeyFrame(Duration.ZERO, e -> setFlashOpacity(flashRects, 0.9)),
+                new KeyFrame(Duration.millis(80), e -> setFlashOpacity(flashRects, 0.2)),
+                new KeyFrame(Duration.millis(160), e -> setFlashOpacity(flashRects, 0.9)),
+                new KeyFrame(Duration.millis(240), e -> setFlashOpacity(flashRects, 0.2)),
+                new KeyFrame(Duration.millis(320), e -> setFlashOpacity(flashRects, 0.9))
+        );
+        flashTimeline.setOnFinished(e -> {
+            overlay.getChildren().removeAll(flashRects);
+            updatePlayerView(player);
+        });
+        flashTimeline.play();
+        return true;
+    }
+
+    private void setFlashOpacity(List<Rectangle> rectangles, double opacity) {
+        for (Rectangle rect : rectangles) {
+            rect.setOpacity(opacity);
+        }
     }
 
     /**
@@ -348,20 +418,25 @@ public class VersusController implements Initializable {
     private void handlePlayerDown(int player) {
         Board board = (player == 1) ? p1Board : p2Board;
         boolean canMove = board.moveBrickDown();
-        
+        boolean delayedRefresh = false;
+
         if (!canMove) {
             board.mergeBrickToBackground();
+            int[][] boardBeforeClear = MatrixOperations.copy(board.getBoardMatrix());
             ClearRow clearRow = board.clearRows();
             if (clearRow.getLinesRemoved() > 0) {
                 board.getScore().add(clearRow.getScoreBonus());
+                delayedRefresh = showLineClearEffect(player, boardBeforeClear);
             }
             if (board.createNewBrick()) {
                 handleGameOver(player);
             }
             updateNextBlock(player, board.getNextShape());
         }
-        
-        updatePlayerView(player);
+
+        if (!delayedRefresh) {
+            updatePlayerView(player);
+        }
     }
 
     /**
@@ -476,10 +551,10 @@ public class VersusController implements Initializable {
                 if (shape[i][j] != 0) {
                     int boardX = x + j;
                     int boardY = y + i;
-                    
-                    if (boardX < 0 || boardX >= boardMatrix[0].length || 
-                        boardY >= boardMatrix.length || 
-                        (boardY >= 0 && boardMatrix[boardY][boardX] != 0)) {
+
+                    if (boardX < 0 || boardX >= boardMatrix[0].length ||
+                            boardY >= boardMatrix.length ||
+                            (boardY >= 0 && boardMatrix[boardY][boardX] != 0)) {
                         return true;
                     }
                 }
@@ -617,10 +692,10 @@ public class VersusController implements Initializable {
      * @param score  Current score value
      */
     private void updateScoreImages(int player, int score) {
-        ImageView[] imageViews = (player == 1) ? 
-            new ImageView[]{p1ScoreThousands, p1ScoreHundreds, p1ScoreTens, p1ScoreOnes} :
-            new ImageView[]{p2ScoreThousands, p2ScoreHundreds, p2ScoreTens, p2ScoreOnes};
-        
+        ImageView[] imageViews = (player == 1) ?
+                new ImageView[]{p1ScoreThousands, p1ScoreHundreds, p1ScoreTens, p1ScoreOnes} :
+                new ImageView[]{p2ScoreThousands, p2ScoreHundreds, p2ScoreTens, p2ScoreOnes};
+
         int thousands = (score / 1000) % 10;
         int hundreds = (score / 100) % 10;
         int tens = (score / 10) % 10;
@@ -640,9 +715,9 @@ public class VersusController implements Initializable {
      */
     private void updateLineImages(int player, int lines) {
         ImageView[] imageViews = (player == 1) ?
-            new ImageView[]{p1LineHundreds, p1LineTens, p1LineOnes} :
-            new ImageView[]{p2LineHundreds, p2LineTens, p2LineOnes};
-        
+                new ImageView[]{p1LineHundreds, p1LineTens, p1LineOnes} :
+                new ImageView[]{p2LineHundreds, p2LineTens, p2LineOnes};
+
         int hundreds = (lines / 100) % 10;
         int tens = (lines / 10) % 10;
         int ones = lines % 10;
@@ -750,6 +825,7 @@ public class VersusController implements Initializable {
             if (p2Timeline != null) p2Timeline.pause();
             rootPane.requestFocus();
         }
+        updateMusicButtonState();
     }
 
     /**
@@ -767,6 +843,7 @@ public class VersusController implements Initializable {
         if (p1Timeline != null && !p1GameOver) p1Timeline.play();
         if (p2Timeline != null && !p2GameOver) p2Timeline.play();
         rootPane.requestFocus();
+        updateMusicButtonState();
     }
 
     /**
@@ -845,6 +922,7 @@ public class VersusController implements Initializable {
 
         startGameLoops();
         rootPane.requestFocus();
+        updateMusicButtonState();
     }
 
     /**
@@ -875,7 +953,7 @@ public class VersusController implements Initializable {
     private void exitToMainMenu(ActionEvent event) {
         if (p1Timeline != null) p1Timeline.stop();
         if (p2Timeline != null) p2Timeline.stop();
-        
+
         try {
             Stage stage = (Stage) p1GamePanel.getScene().getWindow();
             FXMLLoader fxmlLoader = new FXMLLoader(
@@ -900,5 +978,25 @@ public class VersusController implements Initializable {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    @FXML
+    private void toggleMusic(ActionEvent event) {
+        MusicPlayerWav player = Main.getMusicPlayer();
+        if (player == null) return;
+        if (player.isPlaying()) {
+            player.stopMusic();
+        } else {
+            player.playMusic(Main.getDefaultMusicTrack());
+        }
+        updateMusicButtonState();
+    }
+
+    private void updateMusicButtonState() {
+        if (musicToggleButton == null) return;
+        MusicPlayerWav player = Main.getMusicPlayer();
+        boolean playing = player != null && player.isPlaying();
+        musicToggleButton.setOpacity(playing ? 1.0 : 0.35);
+        musicToggleButton.setTooltip(new Tooltip(playing ? "Mute Music" : "Play Music"));
     }
 }

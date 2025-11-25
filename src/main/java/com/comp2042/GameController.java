@@ -51,18 +51,22 @@ public class GameController implements InputEventListener {
         if (!canMove) {
             board.mergeBrickToBackground();
             viewGuiController.clearGhostPiece();
+            int[][] boardBeforeClear = board.getBoardMatrix();
             clearRow = board.clearRows();
             locked = true;
 
             if (clearRow.getLinesRemoved() > 0) {
                 board.getScore().add(clearRow.getScoreBonus());
+                int[][] newBoardMatrix = board.getBoardMatrix();
+                viewGuiController.showLineClearEffectWithBoard(boardBeforeClear, clearRow.getLinesRemoved(), newBoardMatrix);
+            } else {
+                viewGuiController.refreshGameBackground(board.getBoardMatrix());
             }
             if (board.createNewBrick()) {
                 viewGuiController.gameOver();
             }
 
             updateNextBlock();
-            viewGuiController.refreshGameBackground(board.getBoardMatrix());
         }
 
         updateGhostPiece();

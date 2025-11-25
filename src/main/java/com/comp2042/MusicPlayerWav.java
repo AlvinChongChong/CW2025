@@ -13,6 +13,8 @@ import java.net.URL;
 public class MusicPlayerWav {
 
     private Clip clip;
+    private String currentResource;
+    private boolean playing;
 
     /**
      * Plays a WAV file from the specified resource path and loops it continuously.
@@ -21,6 +23,10 @@ public class MusicPlayerWav {
      */
     public void playMusic(String resourcePath) {
         try {
+            if (clip != null) {
+                clip.stop();
+                clip.close();
+            }
             URL soundUrl = getClass().getResource(resourcePath);
             if (soundUrl == null) {
                 System.err.println("Sound file not found: " + resourcePath);
@@ -32,7 +38,10 @@ public class MusicPlayerWav {
             clip.open(audioStream);
             clip.loop(Clip.LOOP_CONTINUOUSLY); // loop forever
             clip.start();
+            currentResource = resourcePath;
+            playing = true;
         } catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
+            playing = false;
             e.printStackTrace();
         }
     }
@@ -41,8 +50,30 @@ public class MusicPlayerWav {
      * Stops the currently playing music if it is running.
      */
     public void stopMusic() {
-        if (clip != null && clip.isRunning()) {
+        if (clip != null) {
             clip.stop();
+            clip.close();
+            clip = null;
+        }
+        playing = false;
+    }
+
+    /**
+     * @return true if the clip is currently playing.
+     */
+    public boolean isPlaying() {
+        return playing;
+    }
+
+    /**
+     * Toggles playback state. If music is playing, it stops.
+     * If muted, it resumes using the last loaded track.
+     */
+    public void togglePlayback() {
+        if (isPlaying()) {
+            stopMusic();
+        } else if (currentResource != null) {
+            playMusic(currentResource);
         }
     }
 }

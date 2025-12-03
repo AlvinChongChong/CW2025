@@ -60,13 +60,13 @@ git clone https://github.com/AlvinChongChong/CW2025.git
 
 ---
 
-## 3. Implemented & Working Properly
+## 3. Implemented and Working Properly
 
 | Feature              | What it does                                     |
 | -------------------- | ------------------------------------------------ |
 | Hard Drop            | Instantly drop the brick to the bottom           |
 | Line Clearing        | Complete rows removed; score updates accordingly |
-| Score & Line Counter | Tracks current score and lines cleared           |
+| Score and Line Counter | Tracks current score and lines cleared           |
 | Next Block Preview   | Shows the upcoming brick                         |
 | Pause / Resume       | Pauses gameplay and UI                           |
 | Background Music     | Plays looping music during gameplay              |
@@ -114,20 +114,23 @@ All features currently work as expected.
 
 * Added score label
 * Added timer
-* Added pause & resume functionality
+* Added pause and resume functionality
 * Added restart function
 * Implemented ghost brick
 * Used images for timer, score, and line counter
 * Added next brick preview
-* Added exit game & exit to main menu
+* Added exit game and exit to main menu
 * Updated high score record
 * Added hold brick feature
+* Added level
+* Added line clear effect
 
 ### **GameController.java**
 
 * Display line-clear score
 * Prevent falling brick collision
 * Handle and display hold brick
+* Added line clear effect
 
 ### **Score.java**
 
@@ -137,7 +140,7 @@ All features currently work as expected.
 ### **SimpleBoard.java**
 
 * Adjusted brick spawn height
-* Added score & line clear tracking
+* Added score and line clear tracking
 * Enabled hold brick functionality
 
 ### **Main.java**
@@ -145,6 +148,7 @@ All features currently work as expected.
 * Play background music on launch
 * Maximize screen automatically
 * Load main menu on startup
+* On/Off for music 
 
 ### **InputEventListener.java**
 
@@ -163,7 +167,7 @@ All features currently work as expected.
 2. **Ghost bricks and static blocks floating above frame** — fixed by adjusting ghost logic and coordinates.
 3. **Falling brick dropped too early** — caused by `HIDDEN_ROWS`; removing it corrected the drop timing.
 4. **Static bricks and frame movement when moving falling brick** — fixed by coordinate adjustments.
-5. **Falling brick alignment & stray pixel** — fixed by coordinate adjustments.
+5. **Falling brick alignment and weird white pixel on top left** — fixed by coordinate adjustments.
 
 ---
 

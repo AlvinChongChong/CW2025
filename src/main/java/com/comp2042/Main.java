@@ -17,7 +17,7 @@ import java.util.ResourceBundle;
  */
 public class Main extends Application {
 
-    private static final String DEFAULT_MUSIC = "/chill_music.wav";
+    private static final String DEFAULT_MUSIC = "/chill_music.mp3";
     private static final MusicPlayerWav MUSIC_PLAYER = new MusicPlayerWav();
 
     public static MusicPlayerWav getMusicPlayer() {
